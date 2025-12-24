@@ -7,7 +7,7 @@ from sklearn.metrics import accuracy_score
 
 # Load Data
 print("Loading data...")
-df = pd.read_csv('diabetes_clean.csv')
+df = pd.read_csv('diabetes_prediction_dataset_preprocessing.csv')
 X = df.drop(columns=['diabetes'])
 y = df['diabetes']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
