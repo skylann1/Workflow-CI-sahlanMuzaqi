@@ -44,7 +44,7 @@ jobs:
         
         # Perintah sakti MLflow buat bikin Docker
         # -m menunjuk ke folder model yang di-save di modelling.py
-        mlflow models build-docker -m MLProject/model_output -n $IMAGE_TAG --enable-mlserver
+        mlflow models build-docker -m MLProject/model_output -n $IMAGE_TAG
 
     - name: Push Docker Image
       run: |
