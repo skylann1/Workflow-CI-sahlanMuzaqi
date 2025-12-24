@@ -1,0 +1,52 @@
+name: CI Pipeline & Docker Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Libraries
+      run: |
+        pip install mlflow==2.19.0 pandas scikit-learn numpy matplotlib seaborn
+
+
+    - name: Train Model
+      run: |
+        cd MLProject
+        python modelling.py
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build Docker Image using MLflow
+      run: |
+        # Nama Image: username/repo:tag
+        # Ganti 'submission-mlops' sesuai nama repo di Docker Hub lu
+        IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/submission-mlops:latest
+        
+        echo "Building Docker Image: $IMAGE_TAG"
+        
+        # Perintah sakti MLflow buat bikin Docker
+        # -m menunjuk ke folder model yang di-save di modelling.py
+        mlflow models build-docker -m MLProject/model_output -n $IMAGE_TAG --enable-mlserver
+
+    - name: Push Docker Image
+      run: |
+        IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/submission-mlops:latest
+        docker push $IMAGE_TAG
